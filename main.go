@@ -35,7 +35,7 @@ func main() {
 
 	// Add router handler
 	v1Router := chi.NewRouter()
-	v1Router.HandleFunc("/healthz", handlerReadiness)
+	v1Router.Get("/healthz", handlerReadiness)
 
 	// mount the v1Router to the /v1 route
 	// so if we access /v1/healthz the handlerReadiness will be called
