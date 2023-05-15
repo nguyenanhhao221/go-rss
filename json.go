@@ -26,3 +26,18 @@ func responseWithJSON(w http.ResponseWriter, statusCode int, payload interface{}
 		return
 	}
 }
+
+func responseWithError(w http.ResponseWriter, statusCode int, msg string) {
+	// Handle when back end error
+	if statusCode > 499 {
+		log.Println("Responding with 5XX error", msg)
+	}
+
+	type errResponse struct {
+		Error string `json:"error"`
+	}
+
+	responseWithJSON(w, statusCode, errResponse{
+		Error: msg,
+	})
+}
