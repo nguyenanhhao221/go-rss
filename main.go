@@ -23,6 +23,7 @@ func main() {
 
 	router := chi.NewRouter()
 
+	// Allow cors
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -31,13 +32,21 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+
+	// Add router handler
+	v1Router := chi.NewRouter()
+	v1Router.HandleFunc("/healthz", handlerReadiness)
+
+	// mount the v1Router to the /v1 route
+	// so if we access /v1/healthz the handlerReadiness will be called
+	router.Mount("/v1", v1Router)
+
+	// Start the server
 	srv := &http.Server{
 		Handler: router,
 		Addr:    ":" + port,
 	}
-
 	log.Printf("Server is starting on port %s", port)
-
 	serverErr := srv.ListenAndServe()
 	if serverErr != nil {
 		log.Fatal("Error while Listen and Serve the server")
