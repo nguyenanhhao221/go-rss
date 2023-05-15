@@ -23,4 +23,3 @@ go.work
 .DS_Store
 go-rss
 .env
-vendor
