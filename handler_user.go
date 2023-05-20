@@ -35,7 +35,8 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 		responseWithError(w, 400, fmt.Sprintf("Cannot create user: %v", err))
 		return
 	} else {
-		responseWithJSON(w, 201, user)
+		convertedUser := databaseUserToUser(user)
+		responseWithJSON(w, 201, convertedUser)
 	}
 
 }
