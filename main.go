@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -8,7 +9,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/nguyenanhhao221/go-rss/internal/database"
 )
+
+type apiConfig struct {
+	DB *database.Queries
+}
 
 func main() {
 	err := godotenv.Load()
@@ -19,6 +26,29 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("PORT is not found in the environment")
+	}
+
+	// The URL in .env to connect to SQL database
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("DB_URL is not found in the environment")
+	}
+
+	// Open a connection to the postgres database
+	// sql.Open is used to establish a connection to the PostgreSQL database.
+	// However, the sql.Open function only creates a connection object, it doesn't actually establish a connection to the database.
+	sqlConnection, dbConnErr := sql.Open("postgres", dbURL)
+	if dbConnErr != nil {
+		log.Fatal("Cannot connect to the database: ", dbConnErr)
+	}
+
+	// database is the package generate by sqlc which contain our queries to the actual database.
+	// So basically here The queries object is responsible for executing SQL queries against the database using the underlying connection.
+	queries := database.New(sqlConnection)
+
+	// This will get pass to our handler so that the handler have access to the database
+	apiCfg := apiConfig{
+		DB: queries,
 	}
 
 	router := chi.NewRouter()
@@ -37,7 +67,7 @@ func main() {
 	v1Router := chi.NewRouter()
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerError)
-
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
 	// mount the v1Router to the /v1 route
 	// so if we access /v1/healthz the handlerReadiness will be called
 	router.Mount("/v1", v1Router)
