@@ -12,52 +12,38 @@ import (
 	"github.com/google/uuid"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users ( id, create_at, updated_at, name, api_key ) 
-VALUES ( $1, $2, $3, $4, 
-	encode(sha256(random()::text::bytea), 'hex')
-)
-RETURNING id, create_at, updated_at, name, api_key
+const createFeed = `-- name: CreateFeed :one
+INSERT INTO feeds ( id, create_at, updated_at, name , url, user_id) 
+VALUES ( $1, $2, $3, $4, $5 , $6)
+RETURNING id, create_at, updated_at, name, url, user_id
 `
 
-type CreateUserParams struct {
+type CreateFeedParams struct {
 	ID        uuid.UUID
 	CreateAt  time.Time
 	UpdatedAt time.Time
 	Name      string
+	Url       string
+	UserID    uuid.UUID
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
+func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, createFeed,
 		arg.ID,
 		arg.CreateAt,
 		arg.UpdatedAt,
 		arg.Name,
+		arg.Url,
+		arg.UserID,
 	)
-	var i User
+	var i Feed
 	err := row.Scan(
 		&i.ID,
 		&i.CreateAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.ApiKey,
-	)
-	return i, err
-}
-
-const getUserByAPIKey = `-- name: GetUserByAPIKey :one
-SELECT id, create_at, updated_at, name, api_key FROM users WHERE api_key = $1
-`
-
-func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByAPIKey, apiKey)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.CreateAt,
-		&i.UpdatedAt,
-		&i.Name,
-		&i.ApiKey,
+		&i.Url,
+		&i.UserID,
 	)
 	return i, err
 }

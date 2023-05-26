@@ -10,7 +10,7 @@ import (
 
 type authedHeader func(http.ResponseWriter, *http.Request, database.User)
 
-// middlewareAuth get the user with api key
+// middlewareAuth from the api key, get the user with that api key, then pass that user into the callback
 func (apiCfg *apiConfig) middlewareAuth(handler authedHeader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		apiKey, err := auth.GetAPIKey(r.Header)
