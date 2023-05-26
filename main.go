@@ -68,6 +68,8 @@ func main() {
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerError)
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	// Call the middlewareAuth function and pass the handler to that function, similar concept to callback, higher order function
+	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUserByAPIKey))
 	// mount the v1Router to the /v1 route
 	// so if we access /v1/healthz the handlerReadiness will be called
 	router.Mount("/v1", v1Router)
