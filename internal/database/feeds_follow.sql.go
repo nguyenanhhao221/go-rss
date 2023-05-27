@@ -44,3 +44,36 @@ func (q *Queries) CreateFeedsFollow(ctx context.Context, arg CreateFeedsFollowPa
 	)
 	return i, err
 }
+
+const getFeedToFollows = `-- name: GetFeedToFollows :many
+SELECT id, create_at, updated_at, user_id, feed_id FROM feeds_follow WHERE user_id=$1
+`
+
+func (q *Queries) GetFeedToFollows(ctx context.Context, userID uuid.UUID) ([]FeedsFollow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedToFollows, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FeedsFollow
+	for rows.Next() {
+		var i FeedsFollow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreateAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.FeedID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
