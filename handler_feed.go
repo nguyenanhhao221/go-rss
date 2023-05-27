@@ -10,6 +10,17 @@ import (
 	"github.com/nguyenanhhao221/go-rss/internal/database"
 )
 
+func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, error := apiCfg.DB.GetFeeds(r.Context())
+	if error != nil {
+		responseWithError(w, 400, fmt.Sprintf("Cannot get feeds: %v", error))
+		return
+	} else {
+		convertedFeeds := databaseFeedsToFeeds(feeds)
+		responseWithJSON(w, 200, convertedFeeds)
+	}
+}
+
 // handlerFeed a method and pass it to the pointer of the apiConfig struct.
 // This way it have access to our database
 func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
