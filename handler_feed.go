@@ -37,7 +37,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	feed, error := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
+	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreateAt:  time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -45,7 +45,7 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		Url:       params.Url,
 		UserID:    user.ID,
 	})
-	if error != nil {
+	if err != nil {
 		responseWithError(w, 400, fmt.Sprintf("Cannot create feed: %v", err))
 		return
 	} else {
