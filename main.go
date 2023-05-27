@@ -72,6 +72,9 @@ func main() {
 	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUserByAPIKey))
 	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handlerCreateFeed))
 	v1Router.Get("/feeds", apiCfg.handlerGetFeeds)
+
+	// Feed follow
+	v1Router.Post("/feeds_follow", apiCfg.middlewareAuth(apiCfg.handlerCreateFeedsFollow))
 	// mount the v1Router to the /v1 route
 	// so if we access /v1/healthz the handlerReadiness will be called
 	router.Mount("/v1", v1Router)
