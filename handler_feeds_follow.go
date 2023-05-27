@@ -24,14 +24,14 @@ func (apiCfg *apiConfig) handlerCreateFeedsFollow(w http.ResponseWriter, r *http
 		return
 	}
 
-	feed_follows, error := apiCfg.DB.CreateFeedsFollow(r.Context(), database.CreateFeedsFollowParams{
+	feed_follows, err := apiCfg.DB.CreateFeedsFollow(r.Context(), database.CreateFeedsFollowParams{
 		ID:        uuid.New(),
 		CreateAt:  time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		UserID:    user.ID,
 		FeedID:    params.FeedID,
 	})
-	if error != nil {
+	if err != nil {
 		responseWithError(w, 400, fmt.Sprintf("Cannot create feed follow: %v", err))
 		return
 	} else {
