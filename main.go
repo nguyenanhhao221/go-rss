@@ -70,6 +70,7 @@ func main() {
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
 	// Call the middlewareAuth function and pass the handler to that function, similar concept to callback, higher order function
 	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUserByAPIKey))
+	// feeds
 	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handlerCreateFeed))
 	v1Router.Get("/feeds", apiCfg.handlerGetFeeds)
 
