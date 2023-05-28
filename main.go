@@ -41,7 +41,11 @@ func main() {
 	if dbConnErr != nil {
 		log.Fatal("Cannot connect to the database: ", dbConnErr)
 	}
-
+	// sql.Open successfully returns an instance of sql.DB regardless of whether the database server is running or not.
+	// To check if the connection was successful, you need to call the Ping method on the sql.DB instance.
+	if err := sqlConnection.Ping(); err != nil {
+		log.Fatal("Failed to ping the database, did you forget to run Docker? Error: ", err)
+	}
 	// database is the package generate by sqlc which contain our queries to the actual database.
 	// So basically here The queries object is responsible for executing SQL queries against the database using the underlying connection.
 	queries := database.New(sqlConnection)
