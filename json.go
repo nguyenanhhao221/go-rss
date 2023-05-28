@@ -19,6 +19,13 @@ func responseWithJSON(w http.ResponseWriter, statusCode int, payload interface{}
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
+
+	// 204 mean no content, so in case this function is being use with 204 but still get passed the payload, it will stop here rather than try to write the payload
+	// Go default Write will also check for this status and if we try to pass data, it will have an error
+	if statusCode == 204 {
+		return
+	}
+
 	_, writeErr := w.Write(data)
 	if writeErr != nil {
 		log.Printf("Failed while writing data after Marshal: %v", err)
