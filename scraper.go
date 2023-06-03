@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nguyenanhhao221/go-rss/internal/database"
+	"github.com/nguyenanhhao221/go-rss/util"
 )
 
 func startScraping(
@@ -69,9 +70,8 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			description.String = item.Description
 			description.Valid = true
 		}
-
 		// Parse date
-		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
+		pubDate, err := util.ParsePubDate(item.PubDate)
 		if err != nil {
 			log.Printf("Could not parse date %v with err %v", item.PubDate, err)
 		}
