@@ -2,6 +2,7 @@ package util
 
 import "time"
 
+// ParsePubDate parse the time base of different format.
 func ParsePubDate(pubDate string) (time.Time, error) {
 
 	// Define the possible date formats

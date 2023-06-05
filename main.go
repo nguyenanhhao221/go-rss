@@ -19,6 +19,7 @@ type apiConfig struct {
 }
 
 func main() {
+	/* Load Env */
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error while loading env")
@@ -35,9 +36,10 @@ func main() {
 		log.Fatal("DB_URL is not found in the environment")
 	}
 
-	// Open a connection to the postgres database
+	/*  Open a connection to the postgres database */
 	// sql.Open is used to establish a connection to the PostgreSQL database.
 	// However, the sql.Open function only creates a connection object, it doesn't actually establish a connection to the database.
+	// In order to use this we also need to import "github.com/lib/pq"
 	sqlConnection, dbConnErr := sql.Open("postgres", dbURL)
 	if dbConnErr != nil {
 		log.Fatal("Cannot connect to the database: ", dbConnErr)
@@ -57,6 +59,7 @@ func main() {
 	}
 
 	// Start the Scraping for rss feed
+	// the keyword go, start a go routine so it can start scraping in another thread
 	go startScraping(queries, 10, time.Minute)
 
 	router := chi.NewRouter()
